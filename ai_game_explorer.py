@@ -2,9 +2,9 @@
 
 #1 Mamadou sokone aprés (à zall)
 #2 bou aliou (reçu)
-#3 ibrahima sy (à zall)
+#3 ibrahima sx (à zall)
 #4 Assane Dieme (à zall)
-#5 Abdoulaye DIA aprés korité(reçu)
+#5 Abdoulaxe DIA aprés korité(reçu)
 #6 sanoussi moundir sene aprés korité(à zall)
 #7 
 import random as r
@@ -35,9 +35,8 @@ def save_datas(datas):
 
 
 def creer_barragess():
-    nbr = r.randint(2, 5)
+    nbr = r.randint(2, 4)
     barrages=[]
-    print(f" Nombre de barrages: {nbr}")
     for c in range(nbr):
         while True:
                 x, y = r.randint(0,9), r.randint(0,9)
@@ -50,7 +49,6 @@ def creer_barragess():
 def creer_refuges(barrages):
     refuges=[]
     nbr = r.randint(1,3)
-    print(f" Nombre de refuges: {nbr}")
     for c in range(nbr):
         while True:
                 x, y = r.randint(0,9), r.randint(0,9)
@@ -69,11 +67,10 @@ def positionne(barrages, refuge):
     return player
 def creer_coffre(barrages, refuges, player):
     while True:
-          x, y = r.randint(0,9), r.randint(0,9)
+          x,y = r.randint(0,9), r.randint(0,9)
           if(not (x,y) in barrages and not (x,y) in refuges and (x,y)!=player):               
                 coffre=(x,y)
                 break
-    print(f" coffre : $")
     return coffre
 def creer_chien(barrages, refuges, player, coffre):
     while True:
@@ -85,136 +82,86 @@ def creer_chien(barrages, refuges, player, coffre):
 
 def afficher(barrages, refuges, player, coffre, chien, score):
     print(f" Score: {score}")
-    for l in range(10):
+    for y in range(10):
         row = ""    
-        for c in range(10):
+        for x in range(10):
             el=""
-            if ((l,c) in barrages):
+            if ((x,y) in barrages):
                 el= " ⛔"
-            elif ((l,c) in refuges):
+            elif ((x,y) in refuges):
                 el= " 🏡"
-            elif((l,c)==player):
+            elif((x,y)==chien):
+                el= " 🐯"
+            elif((x,y)==player):
                 el= " 🧑"
                 dx = chien[0]-player[0] if(chien[0]>player[0]) else player[0]-chien[0]
                 dy = chien[1]-player[1] if(chien[1]>player[1]) else player[1]-chien[1]
-                if(((dx==0 and dy==1) or (dx==1 and dy==0)) and player not in refuges):
+                if(((dy==0 and dx==1) or (dy==1 and dx==0)) and player not in refuges):
                     el= "  ☠"
-            elif((l,c)==chien):
-                el= " 🐯"
-            elif((l,c)==coffre):
+            elif((x,y)==coffre):
                 el= " 💰"
             else:             
-                el= "  ."
-        
+                el= "  ."        
             row+=el
         print(row)
 def auto_move(barrages, refuges, player, chien, level):
-    dx = chien[0]-player[0] if(chien[0]>player[0]) else player[0]-chien[0]
-    dy = chien[1]-player[1] if(chien[1]>player[1]) else player[1]-chien[1]
-    if(((dx==0 and dy==1) or (dx==1 and dy==0)) and player not in refuges):
-        return chien
-    best=(0,0)
-    x1, y1 = chien[0], chien[1]
-    x2, y2 = player[0], player[1]
-    dx = x1-x2 if(x1>x2) else x2-x1
-    dy = y1-y2 if(y1>y2) else y2-y1
-
-    if(dx<dy):
-        if(x1==x2):
-            if(y1<y2):
-                best= (x1,y1+1)
-            elif(y1>y2):
-                best= (x1,y1-1)
-        else:
-            if(x1<x2):
-                best= (x1+1,y1)
-            elif(x1>x2):
-                best= (x1-1,y1)
-    elif(dx>dy):
-        if(y1==y2):
-            if(x1<x2):                
-                best= (x1+1,y1)
-            elif(x1>x2):
-                best= (x1-1,y1)
-        else:
-            if(y1<y2):        
-                best= (x1,y1+1)
-            elif(y1>y2):
-                best= (x1,y1-1)
-    else:
-        if(x1>x2):
-            best= (x1-1,y1)
-        elif(x1<x2):
-            best= (x1+1,y1)
-    
-    x= chien[0]
-    y= chien[1]
-
-    
-
-
-    puissanceparniveau= [4,6,7,9]
-    niveau = level-1
-    puissance= puissanceparniveau[niveau]
-    valids=[]
-    for i in range(puissance):
-        valids.append(best)
-    
-    valids.append((x,y-1) if(y-1>1) else chien)
-    valids.append((x,y+1) if(y+1<10) else chien)
-    valids.append((x-1,y) if(x-1>1) else chien)
-    valids.append((x+1,y) if(x+1<10) else chien)
-
-    if(chien in valids):
-        valids.remove(chien)
-    while True:        
-        chien_next = r.choice(valids)    
-        if(chien_next not in  barrages and chien_next not in  refuges):
-            break
-    if(chien_next[0]<0 or chien_next[1]<0 or chien_next[0]>9 or chien_next[1]>9):
-        return chien
-    return chien_next
-def auto_play(player, coffre, barrages, chien):
-        y1, x1 = player
-        y2, x2 = coffre
-        print(f"x1:{x1}y1:{y1}     x2:{x2}y2:{y2}")
+        x1, y1 = chien
+        x2, y2 = player
+        dt= abs((y1-1)-y2) + abs(x1-x2)
+        db= abs((y1+1)-y2) + abs(x1-x2)
+        dl= abs((x1-1)-x2) + abs(y1-y2)
+        dr= abs((x1+1)-x2) + abs(y1-y2)
         directions= {'t':(x1, y1-1), 'b':(x1, y1+1), 'r':(x1+1, y1), 'l':(x1-1, y1)}
-        distances={'t':y1-y2,'b':y2-y1, 'l':x1-x2,'r':x2-x1}
-        directions_valids=directions.copy()
-        distances_valids=distances.copy()
+        distances={'t':dt,'b':db, 'l':dl,'r':dr}
+        distances_valids={}
+        valids=[]
         for k, v in directions.items():
-            y,x= v
-            if(v in barrages):
-                directions_valids.pop(k)
-                distances_valids.pop(k)
-            elif(x>9 or y>9 or x<0 or y<0):
-                directions_valids.pop(k)
-                distances_valids.pop(k)
-        
-        if(len(list(directions_valids.items()))==0):
-            print(f"aucun chemin :{directions_valids.items()}")
-            return 'p'
-        else:    
-            distances_valids = dict(sorted(distances_valids.items(), key=lambda item: item[1]))
-            fast_path = list(distances_valids.keys())[0]
-            for k, v in distances_valids.items():
-                if(v==0 and (k=='t' or k=='b')):
-                        if('l' in list(distances_valids.keys())):
-                            if('r' in list(distances_valids.keys())):
-                                
-                                pass
-                        elif('r' in list(distances_valids.keys())):
-                            return 'r'
-                        else:
-                            return 'p'
-
+            x,y= v
+            if(v in barrages or v in refuges or y>9 or x>9 or y<0 or x<0):
                 pass
+            else:
+                distances_valids[k]=distances.get(k) 
+                   
+        distances_valids = dict(sorted(distances_valids.items(), key= lambda item: item[1]))
+        valids= list(distances_valids.keys())
 
-            print(distances_valids)
-            print(fast_path)
-            return fast_path
+        puissanceparniveau= [4,6,7,9]
+        niveau = level-1
+        puissance= puissanceparniveau[niveau]
+        if(len(valids)==0):
+            return chien
+        else:
+            for i in range(puissance):
+                valids.append(valids[0])
+        key = r.choice(valids)
+        return directions.get(key)
 
 
+
+
+def auto_play(player, coffre, barrages, chien):
+        x1, y1 = player
+        x2, y2 = coffre
+        dt= abs((y1-1)-y2) + abs(x1-x2)
+        db= abs((y1+1)-y2) + abs(x1-x2)
+        dl= abs((x1-1)-x2) + abs(y1-y2)
+        dr= abs((x1+1)-x2) + abs(y1-y2)
+        directions= {'t':(x1, y1-1), 'b':(x1, y1+1), 'r':(x1+1, y1), 'l':(x1-1, y1)}
+        distances={'t':dt,'b':db, 'l':dl,'r':dr}
+        distances_valids={}
+        for k, v in directions.items():
+            x,y= v
+            if(v in barrages or y>9 or x>9 or y<0 or x<0):
+                pass
+            else:
+                distances_valids[k]=distances.get(k)    
+        distances_valids = dict(sorted(distances_valids.items(), key= lambda item: item[1]))
+        try:
+            return list(distances_valids.keys())[0]
+        except:
+            return 'p'
+        
+ 
 
 def action (level=0, mode="auto"):
     level = int(input(" Donner le niveau que vous jouez entre 1 et 4:")) if(level==0) else level
@@ -229,13 +176,12 @@ def action (level=0, mode="auto"):
     while True:
         dx = chien[0]-player[0] if(chien[0]>player[0]) else player[0]-chien[0]
         dy = chien[1]-player[1] if(chien[1]>player[1]) else player[1]-chien[1]
-        if(((dx==0 and dy==1) or (dx==1 and dy==0)) and player not in refuges):        
+        if(((dy==0 and dx==1) or (dy==1 and dx==0)) and player not in refuges):        
             afficher(barrages, refuges, player , coffre, chien, score)
             print("Vous avez perdu !")
             break
-        afficher(barrages, refuges, player , coffre, chien, score)
-        
-
+        else:
+            os.system("cls" if os.name == "nt" else "clear")
         
         direction=""
         if(mode=="auto"):
@@ -245,50 +191,47 @@ def action (level=0, mode="auto"):
             x2, y2 =chien[0], chien[1]
         else:
             direction= input("t/haut, b/bas, r/droit, l/gauche")
-
-        next_x, next_y = 0, 0
+        neyt_y, neyt_x = 0, 0
         position= [(player[0], player[1]),
                          (coffre[0], coffre[1]),
                          (chien[0], chien[1])
                          ]
-        if(mode=="auto"):
-            time.sleep(15)
-        os.system("cls" if os.name == "nt" else "clear")
+        
         match direction:
-            case "t":
+            case "l":
                 if(player==chien):
                     player=player
                 elif(player[0]>0 ):
                     if(not (player[0]-1,player[1]) in barrages):
                         player= (player[0]-1, player[1])
-                        next_x, next_y = 0, -1
+                        neyt_x, neyt_y = 0, -1
 
-            case "b":
+            case "r":
                 if(player==chien):
                     player=player
                 elif(player[0]<9):
                     if(not (player[0]+1,player[1]) in barrages):
                         player= (player[0]+1,player[1])
-                        next_x, next_y = 0, 1
-            case "l":
+                        neyt_x, neyt_y = 0, 1
+            case "t":
                 if(player==chien):
                     player=player
                 elif(player[1]>0 ):
                     if(not (player[0],player[1]-1) in barrages):
                         player= (player[0],player[1]-1)
-                        next_x, next_y = -1, 0
-            case "r":
+                        neyt_x, neyt_y = -1, 0
+            case "b":
                 if(player==chien):
                     player=player
                 elif(player[1]<9 ):
                     if(not (player[0],player[1]+1) in barrages):
                         player= (player[0],player[1]+1)
-                        next_x, next_y = 1, 0
+                        neyt_x, neyt_y = 1, 0
             case "p":
                 pass
             case _:
                 break
-        position.append((next_x, next_y))
+        position.append((neyt_x, neyt_y))
         parcours.append(position)   
         if(player==coffre):
             score +=1
@@ -296,7 +239,17 @@ def action (level=0, mode="auto"):
             parcours=[]
             #save_datas(datas_ia)
             coffre = creer_coffre(barrages, refuges, player)
-        chien = auto_move(barrages, refuges, player, chien, level)
+        afficher(barrages, refuges, player , coffre, chien, score)
+        if(mode=="auto"):
+            time.sleep(1)
+        os.system("cls" if os.name == "nt" else "clear")
+        if(((dy==0 and dx==1) or (dy==1 and dx==0)) and player not in refuges):
+            pass
+        else:
+            chien = auto_move(barrages, refuges, player, chien, level)
+            afficher(barrages, refuges, player , coffre, chien, score)
+            if(mode=="auto"):
+                time.sleep(1)
 
 mode= input("quel mode utilisez vous (man/auto): ")
 level= int(input("quel niveau utilisez vous (1 à 4): "))
