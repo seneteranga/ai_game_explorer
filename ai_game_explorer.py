@@ -23,13 +23,6 @@ def get_datas():
         datas=[]
     return datas
 def save_datas(datas):
-    datas_clean=[]
-    for data in datas:
-        for row in datas:
-            for other in datas:
-                pass
-
-
     with open('ai_datas.json', 'w', encoding='utf-8') as file:
         json.dump(datas, file, ensure_ascii=False, indent=4)
 
@@ -90,14 +83,14 @@ def afficher(barrages, refuges, player, coffre, chien, score):
                 el= " ⛔"
             elif ((x,y) in refuges):
                 el= " 🏡"
-            elif((x,y)==chien):
-                el= " 🐯"
             elif((x,y)==player):
                 el= " 🧑"
-                dx = chien[0]-player[0] if(chien[0]>player[0]) else player[0]-chien[0]
-                dy = chien[1]-player[1] if(chien[1]>player[1]) else player[1]-chien[1]
-                if(((dy==0 and dx==1) or (dy==1 and dx==0)) and player not in refuges):
+                dx = abs(chien[0]-player[0])
+                dy = abs(chien[1]-player[1]) 
+                if(((dy==0 and dx==1) or (dy==1 and dx==0) or chien==player) and player not in refuges):
                     el= "  ☠"
+            elif((x,y)==chien):
+                el= " 🐯"
             elif((x,y)==coffre):
                 el= " 💰"
             else:             
@@ -173,22 +166,22 @@ def action (level=0, mode="auto"):
     score=0
     datas_ia = get_datas()
     parcours = []
-    while True:
-        dx = chien[0]-player[0] if(chien[0]>player[0]) else player[0]-chien[0]
-        dy = chien[1]-player[1] if(chien[1]>player[1]) else player[1]-chien[1]
-        if(((dy==0 and dx==1) or (dy==1 and dx==0)) and player not in refuges):        
-            afficher(barrages, refuges, player , coffre, chien, score)
-            print("Vous avez perdu !")
-            break
-        else:
-            os.system("cls" if os.name == "nt" else "clear")
-        
+    run = True
+    while run:
+        dx = abs(chien[0]-player[0])
+        dy = abs(chien[1]-player[1])       
         direction=""
-        if(mode=="auto"):
-            direction = auto_play(player, coffre, barrages, chien) 
 
-            x1, y1 =  player[0], player[1]
-            x2, y2 =chien[0], chien[1]
+        os.system("cls" if os.name == "nt" else "clear")
+        afficher(barrages, refuges, player , coffre, chien, score)
+        if(((dy==0 and dx==1) or (dy==1 and dx==0) or chien==player) and player not in refuges):        
+            print("Vous avez perdu !")
+            run = False 
+            break
+
+        if(mode=="auto"):
+            time.sleep(1)
+            direction = auto_play(player, coffre, barrages, chien) 
         else:
             direction= input("t/haut, b/bas, r/droit, l/gauche")
         neyt_y, neyt_x = 0, 0
@@ -196,7 +189,6 @@ def action (level=0, mode="auto"):
                          (coffre[0], coffre[1]),
                          (chien[0], chien[1])
                          ]
-        
         match direction:
             case "l":
                 if(player==chien):
@@ -239,21 +231,21 @@ def action (level=0, mode="auto"):
             parcours=[]
             #save_datas(datas_ia)
             coffre = creer_coffre(barrages, refuges, player)
+        os.system("cls" if os.name == "nt" else "clear")
         afficher(barrages, refuges, player , coffre, chien, score)
+        if(((dy==0 and dx==1) or (dy==1 and dx==0) or chien==player) and player not in refuges):        
+            print("Vous avez perdu !")
+            run = False
+            break  
+        else:                
+            chien = auto_move(barrages, refuges, player, chien, level)
         if(mode=="auto"):
             time.sleep(1)
-        os.system("cls" if os.name == "nt" else "clear")
-        if(((dy==0 and dx==1) or (dy==1 and dx==0)) and player not in refuges):
-            pass
-        else:
-            chien = auto_move(barrages, refuges, player, chien, level)
-            afficher(barrages, refuges, player , coffre, chien, score)
-            if(mode=="auto"):
-                time.sleep(1)
 
 mode= input("quel mode utilisez vous (man/auto): ")
 level= int(input("quel niveau utilisez vous (1 à 4): "))
 nbr= int(input("Combien de tentative souhaitez vous: "))
+
 
 for i in range(nbr): 
     os.system("cls" if os.name == "nt" else "clear")
