@@ -1,12 +1,3 @@
-#(état actuel, action prise, nouvel état, résultat)
-
-#1 Mamadou sokone aprés (à zall)
-#2 bou aliou (reçu)
-#3 ibrahima sx (à zall)
-#4 Assane Dieme (à zall)
-#5 Abdoulaxe DIA aprés korité(reçu)
-#6 sanoussi moundir sene aprés korité(à zall)
-#7 
 import random as r
 import random
 import os
